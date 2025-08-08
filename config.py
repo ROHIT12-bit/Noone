@@ -13,10 +13,10 @@ class Var:
     BOT_TOKEN = getenv("BOT_TOKEN")
     DB_URI = getenv("DB_URI")
     DB_NAME = getenv("DB_NAME")
-    BAN_SUPPORT = getenv("BAN_SUPPORT", "https://t.me/V_Sbotmaker")
+    BAN_SUPPORT = getenv("BAN_SUPPORT", "https://t.me/ROHITREDDY69")
     FSUB_LINK_EXPIRY = int(getenv("FSUB_LINK_EXPIRY", "120"))
-    CHANNEL_ID = int(getenv("CHANNEL_ID", "-1002807789517"))
-    MHCHANNEL_URL = getenv("MHCHANNEL_URL", "https://t.me/Animeworld_zone")
+    CHANNEL_ID = int(getenv("CHANNEL_ID", ""))
+    MHCHANNEL_URL = getenv("MHCHANNEL_URL", "https://t.me/AniEliteEnglish")
     ANIME = getenv("ANIME", "Is It Wr2131ong to Try to Pi123ck Up Girls in a Dungeon?")
     CUSTOM_BANNER = getenv("CUSTOM_BANNER", "https://envs.sh/im5.jpg")
 
@@ -25,11 +25,11 @@ class Var:
     LOG_CHANNEL = int(getenv("LOG_CHANNEL", "0"))
     MAIN_CHANNEL = int(getenv("MAIN_CHANNEL", "0"))
     FILE_STORE = int(getenv("FILE_STORE", "0"))
-    ADMINS = list(map(int, getenv("ADMINS", "1242011540").split()))
+    ADMINS = list(map(int, getenv("ADMINS", "").split()))
 
     RSS_ITEMS = getenv("RSS_ITEMS", "").split()
     SEND_SCHEDULE = getenv("SEND_SCHEDULE", "True").lower() == "true"
-    BRAND_UNAME = getenv("BRAND_UNAME", "@Animeworld_zone")
+    BRAND_UNAME = getenv("BRAND_UNAME", "@AniEliteEnglish)
 
     FFCODE_1080 = getenv("FFCODE_1080")
     FFCODE_720 = getenv("FFCODE_720")
