@@ -15,8 +15,8 @@ class Var:
     DB_NAME = getenv("DB_NAME")
     BAN_SUPPORT = getenv("BAN_SUPPORT", "https://t.me/ROHITREDDY69")
     FSUB_LINK_EXPIRY = int(getenv("FSUB_LINK_EXPIRY", "120"))
-    CHANNEL_ID = int(getenv("CHANNEL_ID", ""))
-    MHCHANNEL_URL = getenv("MHCHANNEL_URL", "https://t.me/AniEliteEnglish")
+    CHANNEL_ID = int(getenv("CHANNEL_ID", "-1002291875883"))
+    MHCHANNEL_URL = getenv("MHCHANNEL_URL", "https://t.me/HSR_ONGOING_ENGLISH")
     ANIME = getenv("ANIME", "Is It Wr2131ong to Try to Pi123ck Up Girls in a Dungeon?")
     CUSTOM_BANNER = getenv("CUSTOM_BANNER", "https://envs.sh/im5.jpg")
 
@@ -29,7 +29,7 @@ class Var:
 
     RSS_ITEMS = getenv("RSS_ITEMS", "").split()
     SEND_SCHEDULE = getenv("SEND_SCHEDULE", "True").lower() == "true"
-    BRAND_UNAME = getenv("BRAND_UNAME", "@AniEliteEnglish")
+    BRAND_UNAME = getenv("BRAND_UNAME", "@HSR_ONGOING_ENGLISH")
 
     FFCODE_1080 = getenv("FFCODE_1080")
     FFCODE_720 = getenv("FFCODE_720")
