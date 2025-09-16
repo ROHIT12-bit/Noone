@@ -85,7 +85,7 @@ async def start_msg(client: Client, message: Message):
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("•⚡️ ᴍᴀɪɴ ʜᴜʙ •", url=Var.MHCHANNEL_URL)],
             [InlineKeyboardButton("• ᴀʙᴏᴜᴛ", callback_data="about"), InlineKeyboardButton('ʜᴇʟᴘ •', callback_data="help")],
-            [InlineKeyboardButton("•👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ •", url="https://t.me/V_Sbotmaker")]
+            [InlineKeyboardButton("•👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ •", url="https://t.me/ROHITREDDY69")]
         ])
 
         smsg = botmaker.START_MSG.format(
