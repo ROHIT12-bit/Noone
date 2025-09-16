@@ -12,17 +12,13 @@ from .func_utils import handle_logs
 from .reporter import rep
 
 CAPTION_FORMAT = """
-<blockquote><b>🌺 <i>{title}</i>🌺 </b></blockquote>
-<b>✦━━━━━━━━━━━━━━━━━✦</b>
-<blockquote><b>‣</b> <i>❖Sᴇᴀsᴏɴ:</i> <i>{anime_season}</i>
-<b>‣</b> <i>❖Eᴘɪsᴏᴅᴇ:</i> <i>{ep_no}</i></blockquote>
-<blockquote><b>‣</b> <i>🎧Aᴜᴅɪᴏ: Japanese [ESub]</i>
-<b>‣</b> <i>📺Sᴛᴀᴛᴜs:</i> <i>{status}</i></blockquote>
-<blockquote><b>‣</b> <i>💞Tᴏᴛᴀʟ Eᴘɪsᴏᴅᴇs:</i> <i>{t_eps}</i>
-<b>‣</b> <i>💞Gᴇɴʀᴇs:</i> <i>{genres}</i></blockquote>
-<b>✦━━━━━━━━━━━━━━━━━✦</b>
-<blockquote>⌬ <b><i>Pᴏᴡᴇʀᴇᴅ Bʏ</i></b> ~ </i></b><b><i>{cred}</i></b></blockquote>
+**{}
+**➪ Season:** `{}`
+**➪ Episode:** `{}`
+**➪ Audio:** `Japanese & English Sub`
+**➪ Quality:** `480p|720p|1080p`
 
+**☏ Powerd By : - @TeluguMultiAnimes**
 """
 
 GENRES_EMOJI = {
