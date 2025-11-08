@@ -1,15 +1,16 @@
-# config.py
+# --- Fix for "There is no current event loop in thread 'MainThread'" ---
+import asyncio
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+# ----------------------------------------------------------------------
+
 from os import getenv
 from dotenv import load_dotenv
 import logging
 from logging.handlers import RotatingFileHandler
-import asyncio  # ✅ added
-
-# 🩹 Fix for "There is no current event loop in thread 'MainThread'"
-try:
-    asyncio.get_running_loop()
-except RuntimeError:
-    asyncio.set_event_loop(asyncio.new_event_loop())
 
 load_dotenv()
 LOGS = logging.getLogger(__name__)
