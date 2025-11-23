@@ -1,65 +1,42 @@
 
-from asyncio import Queue, Lock
-from datetime import datetime
-from logging import INFO, FileHandler, StreamHandler, basicConfig
-from os import path as ospath, mkdir, system
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+# bot_instance.py
 from pyrogram import Client
 from pyrogram.enums import ParseMode
-from uvloop import install
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from config import Var, LOGS
+from asyncio import Queue, Lock
+from datetime import datetime
+from os import path as ospath, mkdir, system
+from uvloop import install as uvloop_install
 
-install()
+# Install uvloop
+uvloop_install()
 
-basicConfig(
-    format="[%(asctime)s] [%(name)s | %(levelname)s] - %(message)s [%(filename)s:%(lineno)d]",
-    datefmt="%m/%d/%Y, %H:%M:%S %p",
-    handlers=[FileHandler("log.txt"), StreamHandler()],
-    level=INFO
-)
-
-# Initialize shared objects
-ani_cache = {
-    'fetch_animes': True,
-    'ongoing': set(),
-    'completed': set()
-}
-
-# Add the key **after** dictionary creation
-ani_cache['custom_rss'] = set()
-ffpids_cache = []
-ffLock = Lock()
+# Shared objects
+ani_cache = {'fetch_animes': True, 'ongoing': set(), 'completed': set(), 'custom_rss': set()}
 ffQueue = Queue()
+ffLock = Lock()
+ffpids_cache = []
 ff_queued = {}
 
-try:
-    bot = Client(
-        name="AutoAniAdvance",
-        api_id=Var.API_ID,
-        api_hash=Var.API_HASH,
-        bot_token=Var.BOT_TOKEN,
-        plugins=dict(root="bot/plugins"),
-        parse_mode=ParseMode.HTML
-    )
-    bot.uptime = datetime.now()
-
-    # bot.loop is safe now because event loop exists
-    bot_loop = bot.loop
-
-    sch = AsyncIOScheduler(timezone="Asia/Kolkata", event_loop=bot_loop)
-except Exception as ee:
-    LOGS.error(str(ee))
-    exit(1)
-
-
-# Ensure necessary directories
-if Var.THUMB and not ospath.exists("thumb.jpg"):
-    system(f"wget -q {Var.THUMB} -O thumb.jpg")
-    LOGS.info("Thumbnail saved!")
-
+# Ensure directories
 for folder in ("encode", "thumbs", "downloads"):
     if not ospath.isdir(folder):
         mkdir(folder)
 
-# rohit_1888 on Tg
+if Var.THUMB and not ospath.exists("thumb.jpg"):
+    system(f"wget -q {Var.THUMB} -O thumb.jpg")
+    LOGS.info("Thumbnail saved!")
+
+# Initialize bot
+bot = Client(
+    name="AutoAniAdvance",
+    api_id=Var.API_ID,
+    api_hash=Var.API_HASH,
+    bot_token=Var.BOT_TOKEN,
+    plugins=dict(root="bot/plugins"),
+    parse_mode=ParseMode.HTML
+)
+
+# Scheduler (will attach loop later in main)
+sch = AsyncIOScheduler(timezone="Asia/Kolkata")
