@@ -1,19 +1,14 @@
-# ============================================================
-#  FIX: Create event loop BEFORE uvloop/logging/imports
+    # ============================================================
+# 100% FIX for Python 3.12+ (MainThread loop error)
 # ============================================================
 import asyncio
 from uvloop import install as uvloop_install
 
-# Create event loop if missing
-try:
-    asyncio.get_running_loop()
-except RuntimeError:
-    asyncio.set_event_loop(asyncio.new_event_loop())
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 
-# Install uvloop AFTER loop setup
 uvloop_install()
 # ============================================================
-
 
 from os import getenv
 from dotenv import load_dotenv
@@ -27,7 +22,7 @@ LOGS = logging.getLogger(__name__)
 
 
 class Var:
-    API_ID = int(getenv("API_ID"))                 # FIXED: convert to int
+    API_ID = int(getenv("API_ID"))
     API_HASH = getenv("API_HASH")
     BOT_TOKEN = getenv("BOT_TOKEN")
     DB_URI = getenv("DB_URI")
@@ -66,9 +61,6 @@ class Var:
     FORCE_PIC = getenv("FORCE_PIC", "https://envs.sh/im5.jpg")
 
 
-# ============================================================
-# Validate Required ENV Variables
-# ============================================================
 REQUIRED_VARS = ["API_ID", "API_HASH", "BOT_TOKEN", "DB_URI"]
 for var_name in REQUIRED_VARS:
     if not getattr(Var, var_name):
@@ -76,9 +68,6 @@ for var_name in REQUIRED_VARS:
         exit(1)
 
 
-# ============================================================
-# Logging Config
-# ============================================================
 LOG_FILE_NAME = "filesharingbot.txt"
 
 logging.basicConfig(
