@@ -8,8 +8,16 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from uvloop import install
-from datetime import datetime
 from config import Var, LOGS
+
+import asyncio  # <--- ADDED
+
+# ========== FIX: ensure event loop exists ==========
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+# ===================================================
 
 install()
 
@@ -44,7 +52,10 @@ try:
         parse_mode=ParseMode.HTML
     )
     bot.uptime = datetime.now()
+
+    # bot.loop is safe now because event loop exists
     bot_loop = bot.loop
+
     sch = AsyncIOScheduler(timezone="Asia/Kolkata", event_loop=bot_loop)
 except Exception as ee:
     LOGS.error(str(ee))
