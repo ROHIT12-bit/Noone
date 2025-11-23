@@ -1,20 +1,19 @@
 # main.py
 import asyncio
 from uvloop import install as uvloop_install
-from bot.core.auto_animes import fetch_animes
-from bot.core.func_utils import new_task, clean_up
-from bot.plugins.up_posts import upcoming_animes
 from config import Var, LOGS
+from bot.core.auto_animes import fetch_animes
+from bot.plugins.up_posts import upcoming_animes
+from bot.core.func_utils import clean_up
+from pyrogram import idle
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-uvloop_install()  # install uvloop first
+uvloop_install()  # install uvloop at the very top
 
 async def main():
-    from pyrogram import Client, idle
-    from apscheduler.schedulers.asyncio import AsyncIOScheduler
-    from bot.core.bot_instance import ani_cache, ffQueue, ffLock, ffpids_cache, ff_queued
-    from bot.core.reporter import rep
+    from pyrogram import Client
 
-    # Now event loop exists, safe to create Client
+    # ✅ Create Client inside async function
     bot = Client(
         name="AutoAniAdvance",
         api_id=Var.API_ID,
@@ -31,7 +30,7 @@ async def main():
 
     await bot.start()
 
-    # Example tasks
+    # Example: start anime fetching
     asyncio.create_task(fetch_animes())
 
     await idle()
