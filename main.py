@@ -1,48 +1,40 @@
 # main.py
 import asyncio
-from pyrogram import idle
-from bot.core.bot_instance import bot, sch, ffQueue, ffLock, ffpids_cache, ff_queued
+from uvloop import install as uvloop_install
 from bot.core.auto_animes import fetch_animes
-from bot.core.reporter import rep
-from bot.core.func_utils import clean_up, new_task
+from bot.core.func_utils import new_task, clean_up
 from bot.plugins.up_posts import upcoming_animes
 from config import Var, LOGS
 
-async def queue_loop():
-    while True:
-        if not ffQueue.empty():
-            post_id = await ffQueue.get()
-            await asyncio.sleep(1.5)
-            ff_queued[post_id].set()
-            async with ffLock:
-                ffQueue.task_done()
-        await asyncio.sleep(10)
+uvloop_install()  # install uvloop first
 
 async def main():
-    # Attach APScheduler to the running event loop
-    loop = asyncio.get_running_loop()
-    sch._loop = loop
+    from pyrogram import Client, idle
+    from apscheduler.schedulers.asyncio import AsyncIOScheduler
+    from bot.core.bot_instance import ani_cache, ffQueue, ffLock, ffpids_cache, ff_queued
+    from bot.core.reporter import rep
+
+    # Now event loop exists, safe to create Client
+    bot = Client(
+        name="AutoAniAdvance",
+        api_id=Var.API_ID,
+        api_hash=Var.API_HASH,
+        bot_token=Var.BOT_TOKEN,
+        plugins=dict(root="bot/plugins"),
+        parse_mode="html"
+    )
+
+    # Scheduler
+    sch = AsyncIOScheduler(timezone="Asia/Kolkata", event_loop=asyncio.get_running_loop())
     sch.add_job(upcoming_animes, "cron", hour=0, minute=30)
     sch.start()
 
     await bot.start()
 
-    try:
-        me = await bot.get_me()
-        bot.username = me.username
-        LOGS.info(f"Bot username: {bot.username}")
-    except Exception as e:
-        LOGS.error(f"Failed to get bot username: {e}")
-        await bot.stop()
-        return
+    # Example tasks
+    asyncio.create_task(fetch_animes())
 
-    # Start queue loop & anime fetch
-    asyncio.create_task(queue_loop())
-    await fetch_animes()
-
-    await rep.report("✅ Bot Started")
     await idle()
-
     await bot.stop()
     await clean_up()
 
