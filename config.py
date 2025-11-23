@@ -1,22 +1,33 @@
-# --- Fix for "There is no current event loop in thread 'MainThread'" ---
+# ============================================================
+#  FIX: Create event loop BEFORE uvloop/logging/imports
+# ============================================================
 import asyncio
+from uvloop import install as uvloop_install
+
+# Create event loop if missing
 try:
     asyncio.get_running_loop()
 except RuntimeError:
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-# ----------------------------------------------------------------------
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+# Install uvloop AFTER loop setup
+uvloop_install()
+# ============================================================
+
 
 from os import getenv
 from dotenv import load_dotenv
 import logging
 from logging.handlers import RotatingFileHandler
 
+# Load .env file
 load_dotenv()
+
 LOGS = logging.getLogger(__name__)
 
+
 class Var:
-    API_ID = int(getenv("API_ID"))
+    API_ID = int(getenv("API_ID"))                 # FIXED: convert to int
     API_HASH = getenv("API_HASH")
     BOT_TOKEN = getenv("BOT_TOKEN")
     DB_URI = getenv("DB_URI")
@@ -29,12 +40,13 @@ class Var:
     ANIME = getenv("ANIME", "Is It Wr2131ong to Try to Pi123ck Up Girls in a Dungeon?")
     CUSTOM_BANNER = getenv("CUSTOM_BANNER", "https://envs.sh/im5.jpg")
 
-    PROTECT_CONTENT = True if getenv('PROTECT_CONTENT', "False") == "True" else False
+    PROTECT_CONTENT = getenv('PROTECT_CONTENT', "False").lower() == "true"
     BACKUP_CHANNEL = int(getenv("BACKUP_CHANNEL", "0"))
     LOG_CHANNEL = int(getenv("LOG_CHANNEL", "0"))
     MAIN_CHANNEL = int(getenv("MAIN_CHANNEL", "0"))
     FILE_STORE = int(getenv("FILE_STORE", "0"))
-    ADMINS = list(map(int, getenv("ADMINS", "").split()))
+
+    ADMINS = list(map(int, getenv("ADMINS", "").split())) if getenv("ADMINS") else []
 
     RSS_ITEMS = getenv("RSS_ITEMS", "").split()
     SEND_SCHEDULE = getenv("SEND_SCHEDULE", "True").lower() == "true"
@@ -50,19 +62,23 @@ class Var:
     DISABLE_CHANNEL_BUTTON = getenv("DISABLE_CHANNEL_BUTTON", None) == 'True'
     AS_DOC = getenv("AS_DOC", "True").lower() == "true"
     THUMB = getenv("THUMB")
-    START_PIC = getenv("START_PIC","https://envs.sh/im5.jpg")
+    START_PIC = getenv("START_PIC", "https://envs.sh/im5.jpg")
     FORCE_PIC = getenv("FORCE_PIC", "https://envs.sh/im5.jpg")
 
 
-# ✅ Required variable validation (outside the class)
+# ============================================================
+# Validate Required ENV Variables
+# ============================================================
 REQUIRED_VARS = ["API_ID", "API_HASH", "BOT_TOKEN", "DB_URI"]
 for var_name in REQUIRED_VARS:
     if not getattr(Var, var_name):
         LOGS.critical(f"Missing required environment variable: {var_name}")
         exit(1)
-        #--------------------------------------------
 
 
+# ============================================================
+# Logging Config
+# ============================================================
 LOG_FILE_NAME = "filesharingbot.txt"
 
 logging.basicConfig(
@@ -78,6 +94,7 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 
