@@ -1,7 +1,8 @@
 # (©)CodeFlix_Bots
 # rohit_1888 on Tg #Dont remove this line
 
-from asyncio import create_subprocess_exec, run as asyrun, all_tasks, gather, sleep as asleep
+from asyncio import create_subprocess_exec, all_tasks, gather, sleep as asleep
+import asyncio
 from aiofiles import open as aiopen
 from pyrogram import idle
 from pyrogram.filters import command, user
@@ -42,37 +43,43 @@ async def restart_bot():
     if ospath.isfile(".restartmsg"):
         with open(".restartmsg") as f:
             lines = f.readlines()
-            chat_id, msg_id = map(int, lines)
-        try:
-            await bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text="<i>Restarted!</i>")
-        except Exception as e:
-            LOGS.error(e)
+            # guard in case file format unexpected
+            if len(lines) >= 2:
+                chat_id, msg_id = map(int, lines[:2])
+                try:
+                    await bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text="<i>Restarted!</i>")
+                except Exception as e:
+                    LOGS.error(e)
 
 async def queue_loop():
     while True:
         if not ffQueue.empty():
             post_id = await ffQueue.get()
             await asleep(1.5)
-            ff_queued[post_id].set()
+            # ensure ff_queued exists and has the event
+            ev = ff_queued.get(post_id)
+            if ev:
+                ev.set()
             await asleep(1.5)
             async with ffLock:
                 ffQueue.task_done()
         await asleep(10)
 
 async def main():
+    # schedule the upcoming_animes job
     sch.add_job(upcoming_animes, "cron", hour=0, minute=30)
+
     await bot.start()
 
- # Set bot username
+    # Set bot username
     try:
         me = await bot.get_me()
-        bot.username = me.username  # Set bot.username to the bot's Telegram username (e.g., @AutoAniAdvance)
+        bot.username = me.username  # Set bot.username to the bot's Telegram username
         LOGS.info(f"Bot username set to {bot.username}")
     except Exception as e:
         LOGS.error(f"Failed to set bot username: {str(e)}")
         await bot.stop()
         return
-   
 
     await restart_bot()
 
@@ -89,12 +96,25 @@ async def main():
         return
 
     try:
-        await bot.send_message(Var.ADMINS, "<b><blockquote>✅ Bᴏᴛ Rᴇsᴛᴀʀᴛᴇᴅ</blockquote></b>")
+        # Send to admins — Var.ADMINS may be a list or single id; handle common cases
+        if isinstance(Var.ADMINS, (list, tuple)):
+            for admin in Var.ADMINS:
+                try:
+                    await bot.send_message(admin, "<b><blockquote>✅ Bᴏᴛ Rᴇsᴛᴀʀᴛᴇᴅ</blockquote></b>")
+                except:
+                    continue
+        else:
+            try:
+                await bot.send_message(Var.ADMINS, "<b><blockquote>✅ Bᴏᴛ Rᴇsᴛᴀʀᴛᴇᴅ</blockquote></b>")
+            except:
+                pass
     except:
         pass
 
     sch.start()
-    bot_loop.create_task(queue_loop())
+    # create queue loop using current running loop
+    asyncio.create_task(queue_loop())
+
     await fetch_animes()
     await idle()
 
@@ -104,6 +124,7 @@ async def main():
     await clean_up()
 
 if __name__ == '__main__':
-    bot_loop.run_until_complete(main())
+    # Use asyncio.run() — reliable with Python 3.8+ and compatible with uvloop policy
+    asyncio.run(main())
 
 # rohit_1888 on Tg
