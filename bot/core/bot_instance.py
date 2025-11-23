@@ -10,15 +10,6 @@ from pyrogram.enums import ParseMode
 from uvloop import install
 from config import Var, LOGS
 
-import asyncio  # <--- ADDED
-
-# ========== FIX: ensure event loop exists ==========
-try:
-    asyncio.get_running_loop()
-except RuntimeError:
-    asyncio.set_event_loop(asyncio.new_event_loop())
-# ===================================================
-
 install()
 
 basicConfig(
