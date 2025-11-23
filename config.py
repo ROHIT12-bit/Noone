@@ -16,11 +16,12 @@ load_dotenv()
 LOGS = logging.getLogger(__name__)
 
 class Var:
-    API_ID = getenv("API_ID")
+    API_ID = int(getenv("API_ID"))
     API_HASH = getenv("API_HASH")
     BOT_TOKEN = getenv("BOT_TOKEN")
     DB_URI = getenv("DB_URI")
     DB_NAME = getenv("DB_NAME")
+
     BAN_SUPPORT = getenv("BAN_SUPPORT", "https://t.me/ROHITREDDY69")
     FSUB_LINK_EXPIRY = int(getenv("FSUB_LINK_EXPIRY", "120"))
     CHANNEL_ID = int(getenv("CHANNEL_ID", "-1003262024908"))
@@ -28,7 +29,7 @@ class Var:
     ANIME = getenv("ANIME", "Is It Wr2131ong to Try to Pi123ck Up Girls in a Dungeon?")
     CUSTOM_BANNER = getenv("CUSTOM_BANNER", "https://envs.sh/im5.jpg")
 
-    PROTECT_CONTENT = True if getenv('PROTECT_CONTENT', "False") == "True" else False 
+    PROTECT_CONTENT = True if getenv('PROTECT_CONTENT', "False") == "True" else False
     BACKUP_CHANNEL = int(getenv("BACKUP_CHANNEL", "0"))
     LOG_CHANNEL = int(getenv("LOG_CHANNEL", "0"))
     MAIN_CHANNEL = int(getenv("MAIN_CHANNEL", "0"))
